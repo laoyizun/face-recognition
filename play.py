@@ -19,12 +19,13 @@ def updateScore(play,bplay,p,b):
 with open('model.json', 'r') as f:
     loaded_model_json = f.read()
 loaded_model = model_from_json(loaded_model_json)
-loaded_model.load_weights("modelweights.h5")
+loaded_model.load_weights("model.h5")
 print("Loaded model from disk")
 
 
 shape_to_label = {'rock':np.array([1.,0.,0.]),'paper':np.array([0.,1.,0.]),'scissor':np.array([0.,0.,1.])}
 arr_to_shape = {np.argmax(shape_to_label[x]):x for x in shape_to_label.keys()}
+
 
 options = ['rock','paper','scissor']
 winRule = {'rock':'scissor','scissor':'paper','paper':'rock'}
@@ -32,11 +33,11 @@ rounds = 0
 botScore = 0
 playerScore = 0
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 ret,frame = cap.read()
 loaded_model.predict(prepImg(frame[50:350,100:400]))
 
-NUM_ROUNDS = 3
+NUM_ROUNDS = 30
 bplay = ""
 
 
@@ -52,17 +53,18 @@ for rounds in range(NUM_ROUNDS):
     for i in range(90):
         ret,frame = cap.read()
     
-        # Countdown    
+        # Countdown
         if i//20 < 3 :
             frame = cv2.putText(frame,str(i//20+1),(320,100),cv2.FONT_HERSHEY_SIMPLEX,3,(250,250,0),2,cv2.LINE_AA)
 
         # Prediction
         elif i/20 < 3.5:
-            pred = arr_to_shape[np.argmax(loaded_model.predict(prepImg(frame[50:350,100:400])))]
+            predict = loaded_model.predict(prepImg(frame[50:350, 150:450]))
+            pred = arr_to_shape[np.argmax(predict)]
         
         # Get Bots Move
         elif i/20 == 3.5:
-            bplay = random.choice(options)            
+            bplay = random.choice(options)
             print(pred,bplay)
 
         # Update Score

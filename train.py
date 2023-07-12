@@ -16,14 +16,13 @@ import os
 import pickle
 import sys
 
-from google.colab import drive
-drive.mount('/content/drive')
-
 """Preparing our Data"""
 
 DATA_PATH = sys.argv[1] # Path to folder containing data
 
-shape_to_label = {'rock':np.array([1.,0.,0.,0.]),'paper':np.array([0.,1.,0.,0.]),'scissor':np.array([0.,0.,1.,0.]),'ok':np.array([0.,0.,0.,1.])}
+# shape_to_label = {'rock':np.array([1.,0.,0.,0.]),'paper':np.array([0.,1.,0.,0.]),'scissor':np.array([0.,0.,1.,0.]),'ok':np.array([0.,0.,0.,1.])}
+# arr_to_shape = {np.argmax(shape_to_label[x]):x for x in shape_to_label.keys()}
+shape_to_label = {'rock':np.array([1.,0.,0.]),'paper':np.array([0.,1.,0.]),'scissor':np.array([0.,0.,1.])}
 arr_to_shape = {np.argmax(shape_to_label[x]):x for x in shape_to_label.keys()}
 
 imgData = list()
@@ -32,10 +31,11 @@ labels = list()
 for dr in os.listdir(DATA_PATH):
     if dr not in ['rock','paper','scissor']:
         continue
-    print(dr)
     lb = shape_to_label[dr]
     i = 0
     for pic in os.listdir(os.path.join(DATA_PATH,dr)):
+        if not pic.endswith("jpg"):
+            continue
         path = os.path.join(DATA_PATH,dr+'/'+pic)
         img = cv2.imread(path)
         imgData.append([img,lb])
@@ -56,12 +56,17 @@ labels = np.array(labels)
 from keras.models import Sequential,load_model
 from keras.layers import Dense,MaxPool2D,Dropout,Flatten,Conv2D,GlobalAveragePooling2D,Activation
 from keras.callbacks import ModelCheckpoint, EarlyStopping
-from keras.optimizers import Adam
+# from keras.optimizers import Adam
+from keras.optimizers.legacy import Adam
 from keras.applications.densenet import DenseNet121
 
+# from keras.applications import MobileNetV2
+
+imgData = tf.keras.applications.densenet.preprocess_input(imgData)
 """DenseNet"""
 
 densenet = DenseNet121(include_top=False, weights='imagenet', classes=3,input_shape=(300,300,3))
+# densenet = MobileNetV2(include_top=False, weights='imagenet', input_shape=(300,300,3))
 densenet.trainable=True
 
 def genericModel(base):
@@ -71,6 +76,7 @@ def genericModel(base):
     model.add(Flatten())
     model.add(Dense(3,activation='softmax'))
     model.compile(optimizer=Adam(),loss='categorical_crossentropy',metrics=['acc'])
+    model.summary()
     return model
 
 dnet = genericModel(densenet)

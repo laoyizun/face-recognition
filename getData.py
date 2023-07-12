@@ -3,8 +3,8 @@ import cv2
 import os
 import sys
 
-PATH = os.getcwd()+'\\'
-cap = cv2.VideoCapture(0)
+PATH = os.getcwd()+"/"
+cap = cv2.VideoCapture(1)
 
 label = sys.argv[1]
 
@@ -23,8 +23,8 @@ while True:
     ret, frame = cap.read()
     cv2.imshow('Get Data : '+label,frame[50:350,150:450])
     if cv2.waitKey(1) & 0xFF == ord(' '):
-        cv2.imwrite(SAVE_PATH+'\\'+label+'{}.jpg'.format(ct),frame[50:350,150:450])
-        print(SAVE_PATH+'\\'+label+'{}.jpg Captured'.format(ct))
+        cv2.imwrite(SAVE_PATH+'/'+label+'{}.jpg'.format(ct),frame[50:350,150:450])
+        print(SAVE_PATH+'/'+label+'{}.jpg Captured'.format(ct))
         ct+=1
     if ct >= maxCt:
         break
