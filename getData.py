@@ -4,7 +4,7 @@ import os
 import sys
 
 PATH = os.getcwd()+"/"
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(2)
 
 label = sys.argv[1]
 

@@ -33,9 +33,9 @@ rounds = 0
 botScore = 0
 playerScore = 0
 
-cap = cv2.VideoCapture(1)
-ret,frame = cap.read()
-loaded_model.predict(prepImg(frame[50:350,100:400]))
+cap = cv2.VideoCapture(2)
+# ret,frame = cap.read()
+# loaded_model.predict(prepImg(frame[50:350,100:400]))
 
 NUM_ROUNDS = 30
 bplay = ""
@@ -53,24 +53,25 @@ for rounds in range(NUM_ROUNDS):
     for i in range(90):
         ret,frame = cap.read()
     
-        # Countdown
-        if i//20 < 3 :
-            frame = cv2.putText(frame,str(i//20+1),(320,100),cv2.FONT_HERSHEY_SIMPLEX,3,(250,250,0),2,cv2.LINE_AA)
-
-        # Prediction
-        elif i/20 < 3.5:
-            predict = loaded_model.predict(prepImg(frame[50:350, 150:450]))
-            pred = arr_to_shape[np.argmax(predict)]
+        # # Countdown
+        # if i//20 < 3 :
+        #     frame = cv2.putText(frame,str(i//20+1),(320,100),cv2.FONT_HERSHEY_SIMPLEX,3,(250,250,0),2,cv2.LINE_AA)
+        #
+        # # Prediction
+        # elif i/20 < 3.5:
+        predict = loaded_model.predict(prepImg(frame[50:350, 150:450]))
+        print(predict, np.argmax(predict))
+        pred = arr_to_shape[np.argmax(predict)]
         
         # Get Bots Move
-        elif i/20 == 3.5:
-            bplay = random.choice(options)
-            print(pred,bplay)
-
-        # Update Score
-        elif i//20 == 4:
-            playerScore,botScore = updateScore(pred,bplay,playerScore,botScore)
-            break
+        # elif i/20 == 3.5:
+        #     bplay = random.choice(options)
+        #     print(pred,bplay)
+        #
+        # # Update Score
+        # elif i//20 == 4:
+        #     playerScore,botScore = updateScore(pred,bplay,playerScore,botScore)
+        #     break
 
         cv2.rectangle(frame, (100, 150), (300, 350), (255, 255, 255), 2)
         frame = cv2.putText(frame,"Player : {}      Bot : {}".format(playerScore,botScore),(120,400),cv2.FONT_HERSHEY_SIMPLEX,1,(250,250,0),2,cv2.LINE_AA)

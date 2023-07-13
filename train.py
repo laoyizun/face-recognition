@@ -26,10 +26,11 @@ shape_to_label = {'rock':np.array([1.,0.,0.]),'paper':np.array([0.,1.,0.]),'scis
 arr_to_shape = {np.argmax(shape_to_label[x]):x for x in shape_to_label.keys()}
 
 imgData = list()
+validationData = list()
 labels = list()
 
 for dr in os.listdir(DATA_PATH):
-    if dr not in ['rock','paper','scissor']:
+    if dr not in ['paper','scissor','rock']:
         continue
     lb = shape_to_label[dr]
     i = 0
@@ -38,10 +39,17 @@ for dr in os.listdir(DATA_PATH):
             continue
         path = os.path.join(DATA_PATH,dr+'/'+pic)
         img = cv2.imread(path)
+        # img = cv2.cvtColor(img, cv2.COLOR_RGBA2BGR)
         imgData.append([img,lb])
         imgData.append([cv2.flip(img, 1),lb]) #horizontally flipped image
         imgData.append([cv2.resize(img[50:250,50:250],(300,300)),lb]) # zoom : crop in and resize
-        i+=3
+        i += 3
+        if i > 20:
+            validationData.append([img, lb])
+            validationData.append([cv2.flip(img, 1), lb])  # horizontally flipped image
+            validationData.append([cv2.resize(img[50:250, 50:250], (300, 300)), lb])  # zoom : crop in and resize
+
+        # print(i, lb)
     print(i)
 
 np.random.shuffle(imgData)
@@ -50,6 +58,10 @@ imgData,labels = zip(*imgData)
 
 imgData = np.array(imgData)
 labels = np.array(labels)
+
+validationData, validationLabel = zip(*validationData)
+validationData = np.array(validationData)
+validationLabel = np.array(validationLabel)
 
 """Model"""
 
@@ -62,10 +74,10 @@ from keras.applications.densenet import DenseNet121
 
 # from keras.applications import MobileNetV2
 
-imgData = tf.keras.applications.densenet.preprocess_input(imgData)
+# imgData = tf.keras.applications.densenet.preprocess_input(imgData)
 """DenseNet"""
 
-densenet = DenseNet121(include_top=False, weights='imagenet', classes=3,input_shape=(300,300,3))
+densenet = DenseNet121(include_top=False, weights=None, classes=3,input_shape=(300,300,3))
 # densenet = MobileNetV2(include_top=False, weights='imagenet', input_shape=(300,300,3))
 densenet.trainable=True
 
@@ -76,7 +88,7 @@ def genericModel(base):
     model.add(Flatten())
     model.add(Dense(3,activation='softmax'))
     model.compile(optimizer=Adam(),loss='categorical_crossentropy',metrics=['acc'])
-    model.summary()
+    # model.summary()
     return model
 
 dnet = genericModel(densenet)
@@ -95,13 +107,14 @@ es = EarlyStopping(patience = 3)
 history = dnet.fit(
     x=imgData,
     y=labels,
-    batch_size = 16,
+    batch_size = 4,
     epochs=8,
     callbacks=[checkpoint,es],
-    validation_split=0.2
+    validation_data=(validationData, validationLabel)
+    # validation_split=0.2
 )
 
-dnet.save_weights('model.h5')
+# dnet.save_weights('model.h5')
 
 with open("model.json", "w") as json_file:
     json_file.write(dnet.to_json())
