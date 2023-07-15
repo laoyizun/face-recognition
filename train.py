@@ -34,23 +34,24 @@ for dr in os.listdir(DATA_PATH):
         continue
     lb = shape_to_label[dr]
     i = 0
-    for pic in os.listdir(os.path.join(DATA_PATH,dr)):
+    pictures = os.listdir(os.path.join(DATA_PATH, dr))
+    for pic in pictures:
         if not pic.endswith("jpg"):
             continue
         path = os.path.join(DATA_PATH,dr+'/'+pic)
         img = cv2.imread(path)
         # img = cv2.cvtColor(img, cv2.COLOR_RGBA2BGR)
-        imgData.append([img,lb])
-        imgData.append([cv2.flip(img, 1),lb]) #horizontally flipped image
-        imgData.append([cv2.resize(img[50:250,50:250],(300,300)),lb]) # zoom : crop in and resize
-        i += 3
-        if i > 20:
+        i += 1
+        if i > len(pictures) * 4 / 5:
             validationData.append([img, lb])
             validationData.append([cv2.flip(img, 1), lb])  # horizontally flipped image
             validationData.append([cv2.resize(img[50:250, 50:250], (300, 300)), lb])  # zoom : crop in and resize
+        else:
+            imgData.append([img, lb])
+            imgData.append([cv2.flip(img, 1), lb])  # horizontally flipped image
+            imgData.append([cv2.resize(img[50:250, 50:250], (300, 300)), lb])  # zoom : crop in and resize
 
-        # print(i, lb)
-    print(i)
+
 
 np.random.shuffle(imgData)
 
@@ -77,7 +78,7 @@ from keras.applications.densenet import DenseNet121
 # imgData = tf.keras.applications.densenet.preprocess_input(imgData)
 """DenseNet"""
 
-densenet = DenseNet121(include_top=False, weights=None, classes=3,input_shape=(300,300,3))
+densenet = DenseNet121(include_top=False, weights='imagenet', classes=3,input_shape=(300,300,3))
 # densenet = MobileNetV2(include_top=False, weights='imagenet', input_shape=(300,300,3))
 densenet.trainable=True
 

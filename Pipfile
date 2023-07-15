@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+tensorflow = "*"
+keras = "*"
+opencv-python = "*"
+matplotlib = "*"
+scikit-image = "*"
+"google.colab" = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"
