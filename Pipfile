@@ -10,7 +10,6 @@ keras = "*"
 opencv-python = "*"
 matplotlib = "*"
 scikit-image = "*"
-"google.colab" = "*"
 
 [dev-packages]
 
