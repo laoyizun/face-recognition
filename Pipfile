@@ -9,7 +9,6 @@ tensorflow = "*"
 keras = "*"
 opencv-python = "*"
 matplotlib = "*"
-scikit-image = "*"
 
 [dev-packages]
 
