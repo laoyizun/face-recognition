@@ -12,7 +12,7 @@ with open('model.json', 'r') as f:
 loaded_model = model_from_json(loaded_model_json)
 loaded_model.load_weights("model.h5")
 print("Loaded model from disk")
-LABEL = ['A','B','B']
+LABEL = ['A','B','C']
 
 for dr in os.listdir("."):
     if dr in LABEL:

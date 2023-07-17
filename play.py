@@ -16,9 +16,7 @@ print("Loaded model from disk")
 shape_to_label = {'A':np.array([1.,0.,0.]),'B':np.array([0.,1.,0.]),'C':np.array([0.,0.,1.])}
 arr_to_shape = {np.argmax(shape_to_label[x]):x for x in shape_to_label.keys()}
 
-cap = cv2.VideoCapture(1)
-# ret,frame = cap.read()
-# loaded_model.predict(prepImg(frame[50:350,100:400]))
+cap = cv2.VideoCapture(0)
 
 NUM_ROUNDS = 30
 bplay = ""
@@ -33,23 +31,17 @@ while True:
 
 while True:
     pred = ""
-    for i in range(90):
-        ret,frame = cap.read()
+    ret,frame = cap.read()
     
-        if i//20 < 3 :
-            frame = cv2.putText(frame,str(i//20+1),(320,100),cv2.FONT_HERSHEY_SIMPLEX,3,(250,250,0),2,cv2.LINE_AA)
-        
-        # # Prediction
-        elif i/20 <= 3.5:
-            predict = loaded_model.predict(prepImg(frame[50:350, 150:450]))
-            print(predict, np.argmax(predict))
-            pred = arr_to_shape[np.argmax(predict)]
+    predict = loaded_model.predict(prepImg(frame[50:350, 150:450]))
+    print(predict, np.argmax(predict))
+    pred = arr_to_shape[np.argmax(predict)]
 
-        cv2.rectangle(frame, (100, 150), (300, 350), (255, 255, 255), 2)
-        frame = cv2.putText(frame,pred,(150,140),cv2.FONT_HERSHEY_SIMPLEX,1,(250,250,0),2,cv2.LINE_AA)
-        frame = cv2.putText(frame,"Press q to quit",(190,200),cv2.FONT_HERSHEY_SIMPLEX,1,(250,250,0),2,cv2.LINE_AA)
-        cv2.imshow('Who is it?',frame)
-        
+    cv2.rectangle(frame, (100, 150), (300, 350), (255, 255, 255), 2)
+    frame = cv2.putText(frame,pred,(150,140),cv2.FONT_HERSHEY_SIMPLEX,1,(250,250,0),2,cv2.LINE_AA)
+    frame = cv2.putText(frame,"Press q to quit",(190,200),cv2.FONT_HERSHEY_SIMPLEX,1,(250,250,0),2,cv2.LINE_AA)
+    cv2.imshow('Who is it?',frame)
+    
     if cv2.waitKey(1) & 0xff == ord('q'):
         break
 
