@@ -108,7 +108,7 @@ dnet = genericModel(densenet)
 # 他通过 val_acc 来监督自己的学习，判断自己这次学习的结果好还是不好
 # save_best_only=True，只保存最好的学习效果
 checkpoint = ModelCheckpoint(
-    'model.h5', 
+    'model.weights.h5', 
     monitor='val_acc', 
     verbose=1, 
     save_best_only=True, 
