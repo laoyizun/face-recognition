@@ -9,7 +9,7 @@ def prepImg(pth):
 with open('model.json', 'r') as f:
     loaded_model_json = f.read()
 loaded_model = model_from_json(loaded_model_json)
-loaded_model.load_weights("model.h5")
+loaded_model.load_weights("model.weights.h5")
 print("Loaded model from disk")
 
 
